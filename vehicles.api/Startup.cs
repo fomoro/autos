@@ -25,6 +25,7 @@ namespace vehicles.api
             {
                 x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
+            services.AddTransient<SeedDb>();//sirve para cuando solo lo vamos a ejecutar una vez
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
