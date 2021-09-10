@@ -6,6 +6,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using vehicles.api.Data;
 using vehicles.api.Data.Entities;
+using vehicles.api.Models;
 
 namespace vehicles.api.Helpers
 {
@@ -60,7 +61,14 @@ namespace vehicles.api.Helpers
         {
             return await _userManager.IsInRoleAsync(user, roleName);
         }
-
+        public async Task<SignInResult> LoginAsync(LoginViewModel model)
+        {
+            return await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
+        }
+        public async Task LogoutAsync()
+        {
+            await _signInManager.SignOutAsync();
+        }
         #endregion
 
 
@@ -104,16 +112,12 @@ namespace vehicles.api.Helpers
             User newUser = await GetUserAsync(model.Username);
             await AddUserToRoleAsync(newUser, user.UserType.ToString());
             return newUser;
-        }
-
-     
+        }     
 
         public async Task<IdentityResult> ChangePasswordAsync(User user, string oldPassword, string newPassword)
         {
             return await _userManager.ChangePasswordAsync(user, oldPassword, newPassword);
-        }
-
-    
+        }    
 
         public async Task<IdentityResult> ConfirmEmailAsync(User user, string token)
         {
@@ -129,19 +133,7 @@ namespace vehicles.api.Helpers
         {
             return await _userManager.GenerateEmailConfirmationTokenAsync(user);
         }
-   
-
-    
-
-        public async Task<SignInResult> LoginAsync(LoginViewModel model)
-        {
-            return await _signInManager.PasswordSignInAsync(model.Username, model.Password, model.RememberMe, false);
-        }
-
-        public async Task LogoutAsync()
-        {
-            await _signInManager.SignOutAsync();
-        }
+           
 
         public async Task<IdentityResult> UpdateUserAsync(User user)
         {
