@@ -3,39 +3,44 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using vehicles.api.Data.Entities;
+using vehicles.api.Helpers;
+using vehicles.common.Enums;
 
 namespace vehicles.api.Data
 {
     public class SeedDb
     {
         private readonly DataContext _context;
-        //private readonly IUserHelper _userHelper;
+        private readonly IUserHelper _userHelper;
 
-        public SeedDb(DataContext context)
-        {
-            _context = context;
-        }
-        /*public SeedDb(DataContext context, IUserHelper userHelper)
+       
+        public SeedDb(DataContext context, IUserHelper userHelper)
         {
             _context = context;
             _userHelper = userHelper;
-        }*/
+        }
 
         //metodo que alimanta la base de datos
         public async Task SeedAsync()
         {
-            await _context.Database.EnsureCreatedAsync();//crea la base - aplica migraciones
+            //crea la base - aplica migraciones
+            await _context.Database.EnsureCreatedAsync();
+
+            //Datos
             await CheckVehiclesTypeAsync();
             await CheckBrandsAsync();
             await CheckDocumentTypesAsync();
             await CheckProceduresAsync();
-            /*await CheckRolesAsycn();
+            
+            await CheckRolesAsycn();
             await CheckUserAsync("1010", "Luis", "Salazar", "luis@yopmail.com", "311 322 4620", "Calle Luna Calle Sol", UserType.Admin);
             await CheckUserAsync("2020", "Juan", "Zuluaga", "zulu@yopmail.com", "311 322 4620", "Calle Luna Calle Sol", UserType.User);
             await CheckUserAsync("3030", "Ledys", "Bedoya", "ledys@yopmail.com", "311 322 4620", "Calle Luna Calle Sol", UserType.User);
             await CheckUserAsync("4040", "Sandra", "Lopera", "sandra@yopmail.com", "311 322 4620", "Calle Luna Calle Sol", UserType.Admin);
-            */
+            
         }
+       
+        #region datos
         private async Task CheckVehiclesTypeAsync()
         {
             if (!_context.VehicleTypes.Any())//si no hay ninguno
@@ -78,7 +83,7 @@ namespace vehicles.api.Data
                 _context.DocumentTypes.Add(new DocumentType { Description = "Pasaporte" });
                 await _context.SaveChangesAsync();
             }
-        }
+        }                
         private async Task CheckProceduresAsync()
         {
             if (!_context.Procedures.Any())
@@ -112,8 +117,13 @@ namespace vehicles.api.Data
                 await _context.SaveChangesAsync();
             }
         }
+        #endregion
 
-        /*
+        private async Task CheckRolesAsycn()
+        {
+            await _userHelper.CheckRoleAsync(UserType.Admin.ToString());
+            await _userHelper.CheckRoleAsync(UserType.User.ToString());
+        }
         private async Task CheckUserAsync(string document, string firstName, string lastName, string email, string phoneNumber, string address, UserType userType)
         {
             User user = await _userHelper.GetUserAsync(email);
@@ -131,23 +141,14 @@ namespace vehicles.api.Data
                     UserName = email,
                     UserType = userType
                 };
-
                 await _userHelper.AddUserAsync(user, "123456");
                 await _userHelper.AddUserToRoleAsync(user, userType.ToString());
 
-                string token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
-                await _userHelper.ConfirmEmailAsync(user, token);
+                //string token = await _userHelper.GenerateEmailConfirmationTokenAsync(user);
+                //await _userHelper.ConfirmEmailAsync(user, token);
             }
         }
 
-        private async Task CheckRolesAsycn()
-        {
-            await _userHelper.CheckRoleAsync(UserType.Admin.ToString());
-            await _userHelper.CheckRoleAsync(UserType.User.ToString());
-        }
-
-      
-
-       */
+        
     }
 }

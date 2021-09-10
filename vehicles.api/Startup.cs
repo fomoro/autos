@@ -1,10 +1,13 @@
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using vehicles.api.Data;
+using vehicles.api.Data.Entities;
+using vehicles.api.Helpers;
 
 namespace vehicles.api
 {
@@ -25,7 +28,20 @@ namespace vehicles.api
             {
                 x.UseSqlServer(Configuration.GetConnectionString("DefaultConnection"));
             });
-            services.AddTransient<SeedDb>();//sirve para cuando solo lo vamos a ejecutar una vez
+            //inyectamos cuando solo lo necesitamos una vez
+            services.AddTransient<SeedDb>();
+            
+            services.AddIdentity<User, IdentityRole>(x => {
+                x.User.RequireUniqueEmail = true;
+                x.Password.RequireDigit = false;
+                x.Password.RequiredUniqueChars = 0;
+                x.Password.RequireLowercase = false;
+                x.Password.RequireNonAlphanumeric = false;
+                x.Password.RequireUppercase = false;                
+            }).AddEntityFrameworkStores<DataContext>();
+
+            //inyectamos cuando se llame duarante el ciclo de vida
+            services.AddScoped<IUserHelper, UserHelper>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -43,9 +59,9 @@ namespace vehicles.api
             }
             app.UseHttpsRedirection();
             app.UseStaticFiles();
-
+            app.UseAuthentication(); 
             app.UseRouting();
-
+            
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>

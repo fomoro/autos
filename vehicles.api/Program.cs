@@ -10,15 +10,15 @@ namespace vehicles.api
     public class Program
     {
         public static void Main(string[] args)
-        {
+        {            
             IWebHost host = CreateWebHostBuilder(args).Build();
             RunSeeding(host);
             host.Run();
         }
 
+        //cada que corra el proyecto verifique y cree la base de datos
         private static void RunSeeding(IWebHost host)
-        {
-            //cada que corra el proyecto haga esto
+        {            
             IServiceScopeFactory scopeFactory = host.Services.GetService<IServiceScopeFactory>();
             using (IServiceScope scope = scopeFactory.CreateScope())
             {

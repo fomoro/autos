@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,14 +8,12 @@ using vehicles.api.Data.Entities;
 
 namespace vehicles.api.Data
 {
-    public class DataContext : DbContext
+    //public class DataContext : DbContext
+    public class DataContext : IdentityDbContext<User>//heredamos desde nuestra propia tabla usuarios
     {
         //DbContextOptions es un generico basado en esta clase
         //pasamos los parametros al super contructor de la clase padre
-        public DataContext(DbContextOptions<DataContext> options):base(options)
-        {
-
-        }
+        public DataContext(DbContextOptions<DataContext> options):base(options){}
 
         public DbSet<VehicleType> VehicleTypes { get; set; }
         public DbSet<Procedure> Procedures { get; set; }
